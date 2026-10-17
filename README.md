@@ -13,7 +13,7 @@ what it shows without touching or redeploying this plugin.
 ```
 user card  ──▶  GET /remote-user-info/:username.json?view=card   (your forum)
                       │
-                      ├─ fetch   {remote_user_info_url}          (your system)
+                      ├─ fetch   {remote_user_info_card_url}     (your system)
                       ├─ sanitise against an allowlist
                       ├─ cache
                       └─ render as trusted HTML
@@ -27,25 +27,33 @@ fragment be sanitised, cached, and fetched without CORS.
 | setting | default | |
 |---|---|---|
 | `remote_user_info_enabled` | `false` | |
-| `remote_user_info_url` | `""` | `%{username}` and `%{view}` are substituted |
+| `remote_user_info_card_url` | `""` | fragment for the user card; `%{username}` is substituted |
+| `remote_user_info_summary_url` | `""` | fragment for the profile summary; leave blank to show nothing there |
 | `remote_user_info_show_on_user_card` | `true` | |
 | `remote_user_info_show_on_user_summary` | `true` | |
 | `remote_user_info_cache_minutes` | `10` | minimum 1 |
 | `remote_user_info_timeout_ms` | `2000` | |
 
-Example URL: `https://example.com/api/usercard/%{username}?view=%{view}`
+Example:
+
+```
+remote_user_info_card_url     https://example.com/api/usercard/%{username}?view=card
+remote_user_info_summary_url  https://example.com/api/usercard/%{username}?view=summary
+```
+
+The two surfaces want different markup — the card is a cramped popover, the
+summary has room — so they get their own URLs. Serve them from one endpoint
+with a parameter, as above, or from two separate paths; the plugin does not
+care. Leaving one blank turns that surface off.
 
 ## What your endpoint should return
 
 `200` with an HTML fragment, or **`204` when there is nothing to show** for that
 user — then no row is rendered at all, rather than an empty one.
 
-`view` is `card` or `summary`. The card is a cramped popover; the summary has
-more room. Return whichever shape suits.
-
 To inherit the forum's styling, use Discourse's own classes and ship no CSS:
 
-**`view=card`**
+**The card**
 
 ```html
 <div class="card-row">
@@ -55,7 +63,7 @@ To inherit the forum's styling, use Discourse's own classes and ship no CSS:
 </div>
 ```
 
-**`view=summary`** — matching core's own stat markup makes your stats
+**The summary** — matching core's own stat markup makes your stats
 indistinguishable from the built-in ones:
 
 ```html

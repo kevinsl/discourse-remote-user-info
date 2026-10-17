@@ -43,17 +43,27 @@ module ::DiscourseRemoteUserInfo
 
       private
 
+      # Each surface has its own URL. They want different markup — the card is a
+      # cramped popover, the summary has room — and a source is as likely to
+      # serve those from two paths as from one with a parameter. Leaving a view
+      # unset is how you turn that surface off at the source.
+      def url_setting(view)
+        case view
+        when "card"
+          SiteSetting.remote_user_info_card_url
+        when "summary"
+          SiteSetting.remote_user_info_summary_url
+        end
+      end
+
       def build_url(username, view)
-        template = SiteSetting.remote_user_info_url.to_s.strip
+        template = url_setting(view).to_s.strip
         return nil if template.blank?
 
         # Deliberately not format/%: the template is admin-supplied and may
         # legitimately contain a bare % (an already-encoded path, say), which
         # would raise.
-        template.gsub("%{username}", CGI.escape(username.to_s)).gsub(
-          "%{view}",
-          CGI.escape(view.to_s),
-        )
+        template.gsub("%{username}", CGI.escape(username.to_s))
       end
 
       def fetch_and_sanitize(url)
@@ -117,8 +127,11 @@ module ::DiscourseRemoteUserInfo
         [SiteSetting.remote_user_info_cache_minutes.to_i, 1].max.minutes
       end
 
+      # Keyed on the URL as well as the user, so changing a setting takes effect
+      # immediately instead of serving the old source until the cache expires.
       def cache_key(username, view)
-        "#{PLUGIN_NAME}:#{Digest::SHA1.hexdigest(SiteSetting.remote_user_info_url.to_s)}:#{view}:#{username.downcase}"
+        digest = Digest::SHA1.hexdigest(url_setting(view).to_s)
+        "#{PLUGIN_NAME}:#{digest}:#{view}:#{username.downcase}"
       end
     end
   end

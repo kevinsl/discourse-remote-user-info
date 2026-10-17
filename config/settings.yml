@@ -3,9 +3,11 @@ plugins:
     default: false
     client: true
 
-  remote_user_info_url:
+  remote_user_info_card_url:
     default: ""
-    description: "Where to fetch the fragment from. %{username} and %{view} are replaced; view is 'card' or 'summary'. The response should be a small HTML fragment using Discourse's own class names, or 204 when there is nothing to show."
+
+  remote_user_info_summary_url:
+    default: ""
 
   remote_user_info_show_on_user_card:
     default: true

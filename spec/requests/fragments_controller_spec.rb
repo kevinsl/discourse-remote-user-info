@@ -7,12 +7,13 @@ describe DiscourseRemoteUserInfo::FragmentsController do
 
   before do
     SiteSetting.remote_user_info_enabled = true
-    SiteSetting.remote_user_info_url = "https://example.com/u/%{username}?view=%{view}"
+    SiteSetting.remote_user_info_card_url = "https://example.com/card/%{username}"
+    SiteSetting.remote_user_info_summary_url = "https://example.com/summary/%{username}"
     Discourse.cache.clear
   end
 
   def stub_source(body:, status: 200, content_type: "text/html")
-    stub_request(:get, %r{https://example\.com/u/}).to_return(
+    stub_request(:get, %r{https://example\.com/}).to_return(
       status: status,
       body: body,
       headers: {
@@ -46,15 +47,15 @@ describe DiscourseRemoteUserInfo::FragmentsController do
     end
 
     it "is no content when the source is unreachable" do
-      stub_request(:get, %r{https://example\.com/u/}).to_timeout
+      stub_request(:get, %r{https://example\.com/}).to_timeout
 
       get "/remote-user-info/#{user.username}.json"
 
       expect(response.status).to eq(204)
     end
 
-    it "does nothing when no url is configured" do
-      SiteSetting.remote_user_info_url = ""
+    it "does nothing when no url is configured for that view" do
+      SiteSetting.remote_user_info_card_url = ""
 
       get "/remote-user-info/#{user.username}.json"
 
@@ -111,21 +112,62 @@ describe DiscourseRemoteUserInfo::FragmentsController do
       end
     end
 
-    context "with the view parameter" do
-      it "passes it through to the source" do
+    context "with two urls" do
+      it "fetches the card url for the card view" do
+        stub_source(body: "<div>ok</div>")
+
+        get "/remote-user-info/#{user.username}.json", params: { view: "card" }
+
+        expect(WebMock).to have_requested(:get, %r{example\.com/card/})
+      end
+
+      it "fetches the summary url for the summary view" do
         stub_source(body: "<div>ok</div>")
 
         get "/remote-user-info/#{user.username}.json", params: { view: "summary" }
 
-        expect(WebMock).to have_requested(:get, /view=summary/)
+        expect(WebMock).to have_requested(:get, %r{example\.com/summary/})
       end
 
-      it "falls back to card for anything unrecognised" do
+      it "falls back to the card view for anything unrecognised" do
         stub_source(body: "<div>ok</div>")
 
         get "/remote-user-info/#{user.username}.json", params: { view: "../../etc" }
 
-        expect(WebMock).to have_requested(:get, /view=card/)
+        expect(WebMock).to have_requested(:get, %r{example\.com/card/})
+      end
+
+      it "leaves one surface off when only the other has a url" do
+        SiteSetting.remote_user_info_summary_url = ""
+        stub_source(body: "<div>ok</div>")
+
+        get "/remote-user-info/#{user.username}.json", params: { view: "summary" }
+        expect(response.status).to eq(204)
+
+        get "/remote-user-info/#{user.username}.json", params: { view: "card" }
+        expect(response.status).to eq(200)
+      end
+
+      it "caches each view separately" do
+        stub_source(body: "<div>ok</div>")
+
+        get "/remote-user-info/#{user.username}.json", params: { view: "card" }
+        get "/remote-user-info/#{user.username}.json", params: { view: "summary" }
+
+        expect(WebMock).to have_requested(:get, %r{example\.com/card/}).once
+        expect(WebMock).to have_requested(:get, %r{example\.com/summary/}).once
+      end
+
+      it "stops serving the old source when the url changes" do
+        stub_request(:get, %r{example\.com/card/}).to_return(status: 200, body: "<div>old</div>")
+        get "/remote-user-info/#{user.username}.json"
+        expect(response.parsed_body["html"]).to include("old")
+
+        SiteSetting.remote_user_info_card_url = "https://example.com/other/%{username}"
+        stub_request(:get, %r{example\.com/other/}).to_return(status: 200, body: "<div>new</div>")
+
+        get "/remote-user-info/#{user.username}.json"
+        expect(response.parsed_body["html"]).to include("new")
       end
     end
 
@@ -134,7 +176,7 @@ describe DiscourseRemoteUserInfo::FragmentsController do
 
       2.times { get "/remote-user-info/#{user.username}.json" }
 
-      expect(WebMock).to have_requested(:get, %r{https://example\.com/u/}).once
+      expect(WebMock).to have_requested(:get, %r{example\.com/card/}).once
     end
   end
 end
