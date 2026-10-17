@@ -86,7 +86,9 @@ describe DiscourseRemoteUserInfo::FragmentsController do
       it "strips inline styles, so the fragment cannot fight the theme" do
         stub_source(body: '<div class="card-row" style="position:fixed;top:0">x</div>')
 
-        html = (get "/remote-user-info/#{user.username}.json"; response.parsed_body["html"])
+        get "/remote-user-info/#{user.username}.json"
+
+        html = response.parsed_body["html"]
         expect(html).not_to include("style")
         expect(html).to include("card-row")
       end
@@ -94,8 +96,9 @@ describe DiscourseRemoteUserInfo::FragmentsController do
       it "strips javascript: links" do
         stub_source(body: '<a href="javascript:alert(1)">x</a>')
 
-        html = (get "/remote-user-info/#{user.username}.json"; response.parsed_body["html"])
-        expect(html).not_to include("javascript:")
+        get "/remote-user-info/#{user.username}.json"
+
+        expect(response.parsed_body["html"]).not_to include("javascript:")
       end
 
       it "refuses a response that is too large to be a row" do
