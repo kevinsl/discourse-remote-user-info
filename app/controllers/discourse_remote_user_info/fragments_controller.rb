@@ -10,8 +10,10 @@ module ::DiscourseRemoteUserInfo
     requires_plugin PLUGIN_NAME
 
     # The user card is shown to anonymous visitors, so this cannot require a
-    # login — but it must respect whatever the forum lets a visitor see.
-    skip_before_action :check_xhr
+    # login — but it must respect whatever the forum lets a visitor see, which
+    # fetch_user does. check_xhr is deliberately left in place: this is only
+    # ever called by the front end, so it should answer an ajax request or a
+    # .json path and nothing else.
 
     def show
       user = fetch_user

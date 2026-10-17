@@ -11,16 +11,17 @@ what it shows without touching or redeploying this plugin.
 ## How it works
 
 ```
-user card  ──▶  GET /remote-user-info/:username.json?view=card   (your forum)
-                      │
-                      ├─ fetch   {remote_user_info_card_url}     (your system)
-                      ├─ sanitise against an allowlist
-                      ├─ cache
-                      └─ render as trusted HTML
+user card  ──▶  your forum  ──▶  fetch {remote_user_info_card_url}
+                                 sanitise against an allowlist
+                                 cache
+                 ◀──────────────  render as trusted HTML
 ```
 
 The browser never talks to the remote system directly, which is what lets the
 fragment be sanitised, cached, and fetched without CORS.
+
+Nothing here is part of the contract your endpoint implements — you point a
+setting at a URL and return a fragment. The rest is the plugin's business.
 
 ## Settings
 
