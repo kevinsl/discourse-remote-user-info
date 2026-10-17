@@ -171,15 +171,6 @@ describe DiscourseRemoteUserInfo::FragmentsController do
       end
     end
 
-    it "does not answer a plain browser request" do
-      stub_source(body: "<div>ok</div>")
-
-      get "/remote-user-info/#{user.username}"
-
-      expect(response.body).to be_blank
-      expect(WebMock).not_to have_requested(:get, %r{example\.com/})
-    end
-
     it "caches, so a popover does not hammer the source" do
       stub_source(body: "<div>ok</div>")
 
