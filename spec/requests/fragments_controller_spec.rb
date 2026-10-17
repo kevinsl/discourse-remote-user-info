@@ -72,7 +72,8 @@ describe DiscourseRemoteUserInfo::FragmentsController do
     context "with hostile markup" do
       it "strips scripts and event handlers" do
         stub_source(
-          body: '<div class="card-row"><script>alert(1)</script><a href="#" onclick="alert(2)">x</a></div>',
+          body:
+            '<div class="card-row"><script>alert(1)</script><a href="#" onclick="alert(2)">x</a></div>',
         )
 
         get "/remote-user-info/#{user.username}.json"
@@ -116,7 +117,7 @@ describe DiscourseRemoteUserInfo::FragmentsController do
 
         get "/remote-user-info/#{user.username}.json", params: { view: "summary" }
 
-        expect(WebMock).to have_requested(:get, %r{view=summary})
+        expect(WebMock).to have_requested(:get, /view=summary/)
       end
 
       it "falls back to card for anything unrecognised" do
@@ -124,7 +125,7 @@ describe DiscourseRemoteUserInfo::FragmentsController do
 
         get "/remote-user-info/#{user.username}.json", params: { view: "../../etc" }
 
-        expect(WebMock).to have_requested(:get, %r{view=card})
+        expect(WebMock).to have_requested(:get, /view=card/)
       end
     end
 

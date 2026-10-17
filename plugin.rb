@@ -17,6 +17,4 @@ end
 
 require_relative "lib/discourse_remote_user_info/engine"
 
-after_initialize do
-  require_relative "lib/discourse_remote_user_info/fetcher"
-end
+after_initialize { require_relative "lib/discourse_remote_user_info/fetcher" }

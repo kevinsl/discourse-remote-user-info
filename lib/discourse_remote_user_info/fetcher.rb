@@ -31,7 +31,7 @@ module ::DiscourseRemoteUserInfo
     class << self
       def fragment(username, view)
         return nil if username.blank?
-        return nil unless %w[card summary].include?(view)
+        return nil if %w[card summary].exclude?(view)
 
         url = build_url(username, view)
         return nil if url.blank?
@@ -50,9 +50,10 @@ module ::DiscourseRemoteUserInfo
         # Deliberately not format/%: the template is admin-supplied and may
         # legitimately contain a bare % (an already-encoded path, say), which
         # would raise.
-        template
-          .gsub("%{username}", CGI.escape(username.to_s))
-          .gsub("%{view}", CGI.escape(view.to_s))
+        template.gsub("%{username}", CGI.escape(username.to_s)).gsub(
+          "%{view}",
+          CGI.escape(view.to_s),
+        )
       end
 
       def fetch_and_sanitize(url)
