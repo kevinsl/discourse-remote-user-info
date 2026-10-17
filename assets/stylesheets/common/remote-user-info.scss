@@ -1,0 +1,13 @@
+// Deliberately almost empty.
+//
+// The fragment is expected to use Discourse's own class names — .card-row,
+// .metadata, .desc, .user-stat — so core styles it and it follows the active
+// theme. Adding rules here would start a second source of truth and break that.
+//
+// The only thing worth owning is spacing around the block itself, which core
+// cannot know about.
+.remote-user-info {
+  &:empty {
+    display: none;
+  }
+}

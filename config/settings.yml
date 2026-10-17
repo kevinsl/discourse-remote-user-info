@@ -1,0 +1,26 @@
+plugins:
+  remote_user_info_enabled:
+    default: false
+    client: true
+
+  remote_user_info_url:
+    default: ""
+    description: "Where to fetch the fragment from. %{username} and %{view} are replaced; view is 'card' or 'summary'. The response should be a small HTML fragment using Discourse's own class names, or 204 when there is nothing to show."
+
+  remote_user_info_show_on_user_card:
+    default: true
+    client: true
+
+  remote_user_info_show_on_user_summary:
+    default: true
+    client: true
+
+  remote_user_info_cache_minutes:
+    default: 10
+    min: 1
+    max: 1440
+
+  remote_user_info_timeout_ms:
+    default: 2000
+    min: 250
+    max: 10000

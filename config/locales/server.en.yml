@@ -1,0 +1,8 @@
+en:
+  site_settings:
+    remote_user_info_enabled: "Show a row of information fetched from another system on user cards and profile summaries."
+    remote_user_info_url: "URL template for the fragment. %{username} and %{view} are substituted. Must be reachable from the forum server."
+    remote_user_info_show_on_user_card: "Show the row on the user card popover."
+    remote_user_info_show_on_user_summary: "Show the row on the user profile summary."
+    remote_user_info_cache_minutes: "How long to cache each fragment. User cards open often; a low value means more requests to the remote system."
+    remote_user_info_timeout_ms: "How long to wait for the remote system before giving up and showing nothing."
