@@ -64,19 +64,23 @@ To inherit the forum's styling, use Discourse's own classes and ship no CSS:
 </div>
 ```
 
-**The summary** — matching core's own stat markup makes your stats
-indistinguishable from the built-in ones:
+**The summary** — the fragment goes in above the stats, as a sibling of the
+page's other sections, so its root element has to be a section too. Core styles
+`.top-section` and `.stats-title` by class, which is why a `div` works for the
+heading (the allowlist has no heading tags):
 
 ```html
-<li class="linked-stat">
-  <a href="https://example.com/u/alice">
-    <div class="user-stat">
-      <span class="value">341</span>
-      <span class="label">In collection</span>
-    </div>
-  </a>
-</li>
+<div class="top-section yours-section">
+  <div class="stats-title">Label</div>
+  <a href="https://example.com/u/alice">View alice</a>
+</div>
 ```
+
+An `<li class="linked-stat">` will not work here, however much it looks like
+the right thing — the stats list is a different element, and an orphaned `li`
+is what you get. If what you want really is one more stat alongside the
+built-in ones, that is a different outlet (`user-summary-stat`) and this plugin
+does not use it.
 
 ### What is stripped
 
