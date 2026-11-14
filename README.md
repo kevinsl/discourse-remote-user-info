@@ -8,6 +8,9 @@ the whole idea: the fragment uses Discourse's own class names, so it inherits
 the forum's theme — light, dark, custom colour schemes — and you can change
 what it shows without touching or redeploying this plugin.
 
+Built for [ctlgs](https://ctlgs.org), which shows each forum member's collection,
+contributions and listings on their card at [forum.ctlgs.org](https://forum.ctlgs.org).
+
 ## How it works
 
 ```
