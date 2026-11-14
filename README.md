@@ -3,13 +3,12 @@
 Shows a row of information about a user, fetched from another system, on the
 Discourse user card and profile summary.
 
-The remote system returns a small **HTML fragment** rather than JSON. That is
-the whole idea: the fragment uses Discourse's own class names, so it inherits
-the forum's theme — light, dark, custom colour schemes — and you can change
-what it shows without touching or redeploying this plugin.
+The remote system returns a small **HTML fragment** rather than JSON, following
+the Edge Side Include model. The fragment uses Discourse's own class names,
+so it inherits the forum's theme — light, dark, custom colour schemes — and you
+can change what it shows without touching or redeploying this plugin.
 
-Built for [ctlgs](https://ctlgs.org), which shows each forum member's collection,
-contributions and listings on their card at [forum.ctlgs.org](https://forum.ctlgs.org).
+This was developed for [ctlgs.org](https://ctlgs.org), allowing a member's collection, contributions, and for sale listings to be shown on their [discourse](https://forum.ctlgs.org) user-card and profile.
 
 ## How it works
 
