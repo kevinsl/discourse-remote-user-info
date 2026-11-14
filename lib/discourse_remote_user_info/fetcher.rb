@@ -95,11 +95,26 @@ module ::DiscourseRemoteUserInfo
         body = response.body.to_s
         return nil if body.bytesize > MAX_BYTES
 
-        body
+        to_utf8(body, response.type_params["charset"])
       rescue StandardError => e
         # A slow or broken source must never take the user card with it.
         Rails.logger.warn("#{PLUGIN_NAME}: fetch failed for #{url}: #{e.class}: #{e.message}")
         nil
+      end
+
+      # Net::HTTP hands back raw bytes with no encoding attached. Left like
+      # that, Sanitize reads each byte of a multi-byte character as a character
+      # of its own, and a "·" reaches the page as "Â·". Label the body with the
+      # charset the source declared, UTF-8 when it declared none, and replace
+      # anything that is not valid in it.
+      def to_utf8(body, charset)
+        encoding =
+          begin
+            Encoding.find(charset.presence || "UTF-8")
+          rescue ArgumentError
+            Encoding::UTF_8
+          end
+        body.dup.force_encoding(encoding).encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
       end
 
       def headers

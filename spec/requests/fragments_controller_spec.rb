@@ -32,6 +32,15 @@ describe DiscourseRemoteUserInfo::FragmentsController do
       expect(response.parsed_body["html"]).to include("card-row")
     end
 
+    it "keeps characters outside ASCII intact" do
+      stub_source(body: "<div>12 in collection · 3 wanted · Ł</div>".b)
+
+      get "/remote-user-info/#{user.username}.json"
+
+      expect(response.parsed_body["html"]).to include("12 in collection · 3 wanted · Ł")
+      expect(response.parsed_body["html"]).not_to include("Â")
+    end
+
     it "is no content when the source has nothing for this user" do
       stub_source(body: "", status: 204)
 
