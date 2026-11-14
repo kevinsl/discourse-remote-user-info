@@ -19,8 +19,10 @@ module ::DiscourseRemoteUserInfo
   class Fetcher
     # Structure only. No img, no iframe, no style, no script, no id — an id
     # could collide with the host page, and everything else here is either an
-    # injection vector or a way to smuggle in styling.
-    ALLOWED_TAGS = %w[div span a p ul ol li strong em b i br small].freeze
+    # injection vector or a way to smuggle in styling. h3 is here because the
+    # profile summary's section headings are h3.stats-title; a div with that
+    # class gets the capitals but not the heading's size and weight.
+    ALLOWED_TAGS = %w[div span a p ul ol li strong em b i br small h3].freeze
     ALLOWED_ATTRIBUTES = { "a" => %w[href title], :all => %w[class title] }.freeze
     ALLOWED_PROTOCOLS = { "a" => { "href" => %w[http https] } }.freeze
 

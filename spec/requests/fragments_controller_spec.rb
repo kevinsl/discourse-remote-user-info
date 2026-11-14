@@ -95,6 +95,14 @@ describe DiscourseRemoteUserInfo::FragmentsController do
         expect(html).to include("card-row")
       end
 
+      it "keeps an h3, so a summary section can head itself like core's" do
+        stub_source(body: '<div class="top-section"><h3 class="stats-title">Label</h3></div>')
+
+        get "/remote-user-info/#{user.username}.json"
+
+        expect(response.parsed_body["html"]).to include('<h3 class="stats-title">Label</h3>')
+      end
+
       it "strips javascript: links" do
         stub_source(body: '<a href="javascript:alert(1)">x</a>')
 

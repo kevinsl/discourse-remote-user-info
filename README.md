@@ -65,13 +65,13 @@ To inherit the forum's styling, use Discourse's own classes and ship no CSS:
 ```
 
 **The summary** — the fragment goes in above the stats, as a sibling of the
-page's other sections, so its root element has to be a section too. Core styles
-`.top-section` and `.stats-title` by class, which is why a `div` works for the
-heading (the allowlist has no heading tags):
+page's other sections, so its root element has to be a section too. Head it the
+way core heads its own sections, with `h3.stats-title`; a `div` with that class
+gets the capitals but not the heading's size and weight:
 
 ```html
 <div class="top-section yours-section">
-  <div class="stats-title">Label</div>
+  <h3 class="stats-title">Label</h3>
   <a href="https://example.com/u/alice">View alice</a>
 </div>
 ```
@@ -86,7 +86,7 @@ does not use it.
 
 The response is run through an allowlist before it reaches a browser.
 
-**Kept:** `div span a p ul ol li strong em b i br small`, and the attributes
+**Kept:** `div span a p ul ol li strong em b i br small h3`, and the attributes
 `class`, `title`, and `href` on links (`http` and `https` only).
 
 **Removed:** `<script>`, `<style>`, `style=`, `id=`, every `on*` handler,
