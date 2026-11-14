@@ -114,7 +114,10 @@ module ::DiscourseRemoteUserInfo
           rescue ArgumentError
             Encoding::UTF_8
           end
-        body.dup.force_encoding(encoding).encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
+        body
+          .dup
+          .force_encoding(encoding)
+          .encode(Encoding::UTF_8, invalid: :replace, undef: :replace)
       end
 
       def headers
